@@ -25,6 +25,7 @@ dependencies = [
  "dhat",
  "itertools",
  "pico-args",
+ "smallvec",
  "tinyjson",
 ]
 
