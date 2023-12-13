@@ -79,9 +79,9 @@ fn parse_stacks(input: &str) -> Vec<Vec<char>> {
 fn parse_instruction(input: &str) -> Instruction {
     let mut parts = input
         .split_whitespace()
-        .enumerate()
-        .filter(|(i, _)| i % 2 == 1)
-        .map(|(_, s)| s.parse::<usize>().unwrap());
+        .skip(1)
+        .step_by(2)
+        .map(|s| s.parse::<usize>().unwrap());
     Instruction {
         amount: parts.next().unwrap(),
         from: parts.next().unwrap() - 1,
