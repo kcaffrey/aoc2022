@@ -29,6 +29,7 @@ struct Map {
     objects: HashMap<Coordinate, Object>,
     max_y: u16,
     use_floor: bool,
+    prev_before_last_settle: Option<Coordinate>,
 }
 
 impl Map {
@@ -57,12 +58,25 @@ impl Map {
             objects,
             max_y,
             use_floor: false,
+            prev_before_last_settle: None,
         }
     }
 
     pub fn drop_sand(&mut self) -> bool {
-        let mut pos = Coordinate::new(500, 0);
+        if !self.drop_sand_with_cache(true) {
+            self.drop_sand_with_cache(false)
+        } else {
+            true
+        }
+    }
+
+    fn drop_sand_with_cache(&mut self, with_cache: bool) -> bool {
+        let mut pos = self
+            .prev_before_last_settle
+            .filter(|_| with_cache)
+            .unwrap_or(Coordinate::new(500, 0));
         while let Some(next) = self.next_available_spot(pos) {
+            self.prev_before_last_settle = Some(pos);
             if !self.use_floor && next.y > self.max_y {
                 return false;
             }
