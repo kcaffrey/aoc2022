@@ -1,8 +1,6 @@
 use std::{collections::HashSet, ops::Sub};
 
-use rayon::iter::{
-    IntoParallelIterator, IntoParallelRefIterator, ParallelBridge, ParallelIterator,
-};
+use rayon::iter::{IntoParallelRefIterator, ParallelBridge, ParallelIterator};
 
 advent_of_code::solution!(15);
 
@@ -63,21 +61,6 @@ fn part_two_helper(input: &str, valid_coords: Range<i32>) -> u64 {
             }
         })
         .unwrap()
-    // (valid_coords.start..valid_coords.end)
-    //     .into_par_iter()
-    //     .find_map_any(|y| {
-    //         let ranges = non_beacon_ranges_at_y(&sensors_and_beacons, y);
-    //         match ranges.len() {
-    //             l if l > 1 || l == 1 && ranges[0].end < valid_coords.end => {
-    //                 Some((ranges[0].end as u64) * 4_000_000 + y as u64)
-    //             }
-    //             1 if ranges[0].start > valid_coords.start => {
-    //                 Some((ranges[0].start - 1) as u64 * 4_000_000 + y as u64)
-    //             }
-    //             _ => None,
-    //         }
-    //     })
-    //     .unwrap()
 }
 
 fn parse(input: &str) -> Vec<(Coordinate, Coordinate)> {
