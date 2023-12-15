@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet, VecDeque},
     fmt::{Display, Write},
 };
 
@@ -17,11 +17,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     let mut map = Map::parse(input);
     map.use_floor = true;
-    let mut count = 0;
-    while map.drop_sand() {
-        count += 1;
-    }
-    Some(count)
+    Some(map.bfs())
 }
 
 #[derive(Debug, Clone, Default)]
@@ -100,6 +96,31 @@ impl Map {
 
     fn blocked(&self, coord: Coordinate) -> bool {
         self.objects.contains_key(&coord) || self.use_floor && coord.y >= self.max_y + 2
+    }
+
+    pub fn bfs(&self) -> u32 {
+        let origin = Coordinate::new(500, 0);
+        let mut visited = HashSet::new();
+        let mut open = VecDeque::new();
+        visited.insert(origin);
+        open.push_back(origin);
+        let mut count = 0;
+        while let Some(cur) = open.pop_front() {
+            count += 1;
+            for next in [cur.down(), cur.down_left(), cur.down_right()]
+                .into_iter()
+                .filter(|&c| {
+                    !self.blocked(c)
+                        && (self.use_floor && c.y < self.max_y + 2
+                            || !self.use_floor && c.y < self.max_y)
+                })
+            {
+                if visited.insert(next) {
+                    open.push_back(next);
+                }
+            }
+        }
+        count
     }
 }
 
