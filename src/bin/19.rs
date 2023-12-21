@@ -63,9 +63,26 @@ fn search_recursive(
         blueprint.obsidian_robot,
         blueprint.geode_robot,
     ];
+    let current_bots = [
+        state.ore_robots,
+        state.clay_robots,
+        state.obsidian_robots,
+        state.geode_robots,
+    ];
+    let mut max_resource_costs = [0; 3];
+    for costs in bot_costs {
+        max_resource_costs[0] = max_resource_costs[0].max(costs.ore);
+        max_resource_costs[1] = max_resource_costs[1].max(costs.clay);
+        max_resource_costs[2] = max_resource_costs[2].max(costs.obsidian);
+    }
+    let mut skip_bots = [false; 4];
+    for bot_index in 0..3 {
+        skip_bots[bot_index] = current_bots[bot_index] >= max_resource_costs[bot_index];
+    }
+
     let bought_last_turn = last_buy.iter().any(|&b| b);
     for bot_index in 0..4 {
-        if bots_affordable[bot_index] {
+        if bots_affordable[bot_index] && !skip_bots[bot_index] {
             if bot_index == 0 && minutes_left.saturating_sub(2) < bot_costs[0].ore {
                 continue;
             }
